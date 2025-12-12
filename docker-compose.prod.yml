@@ -1,0 +1,14 @@
+version: "3.8"
+
+services:
+  backend:
+    image: <AWS_ACCOUNT_ID>.dkr.ecr.<REGION>.amazonaws.com/poc-backend:latest
+    ports:
+      - "5000:5000"
+    restart: always
+
+  frontend:
+    image: <AWS_ACCOUNT_ID>.dkr.ecr.<REGION>.amazonaws.com/poc-frontend:latest
+    ports:
+      - "80:80"
+    restart: always
