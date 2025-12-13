@@ -33,12 +33,12 @@ jobs:
 
       - name: Build & Push Backend Image
         run: |
-          docker build -t $ECR_REGISTRY/$BACKEND_REPO:latest ./backend
+          docker build -t $ECR_REGISTRY/$BACKEND_REPO:latest backend
           docker push $ECR_REGISTRY/$BACKEND_REPO:latest
 
       - name: Build & Push Frontend Image
         run: |
-          docker build -t $ECR_REGISTRY/$FRONTEND_REPO:latest ./frontend
+          docker build -t $ECR_REGISTRY/$FRONTEND_REPO:latest frontend
           docker push $ECR_REGISTRY/$FRONTEND_REPO:latest
 
   deploy:
@@ -51,7 +51,7 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
 
-      - name: Copy docker-compose file to EC2
+      - name: Copy docker-compose file
         run: |
           scp -o StrictHostKeyChecking=no docker-compose.prod.yml \
           ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/ubuntu/deploy/docker-compose.prod.yml
@@ -62,6 +62,7 @@ jobs:
           ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << EOF
             aws ecr get-login-password --region ${{ secrets.AWS_REGION }} \
             | docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY }}
+
             cd /home/ubuntu/deploy
             docker compose pull
             docker compose up -d
